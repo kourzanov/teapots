@@ -1,6 +1,8 @@
 (module
   tri
   (library srfi1)
+  (cond-expand
+    (bigloo-eval (import (helpers "helpers.scm"))))
   (export
     string->point
     tri->svg
@@ -1502,6 +1504,234 @@
        matcher)
      args)))
 (define
+  |max'|
+  (lambda
+    args
+    ((letrec
+       ((matcher
+          (lambda
+            (vals)
+            ((lambda
+               (fail)
+               (if (pair? vals)
+                   ((lambda
+                      (valx valy)
+                      (if (eq? valx '|+∞|)
+                          (if (pair? valy)
+                              ((lambda
+                                 (valx valy)
+                                 (if (null? valy) '|+∞| (fail)))
+                               (car valy)
+                               (cdr valy))
+                              (fail))
+                          (fail)))
+                    (car vals)
+                    (cdr vals))
+                   (fail)))
+             (lambda
+               ()
+               ((lambda
+                  (fail)
+                  (if (pair? vals)
+                      ((lambda
+                         (valx valy)
+                         (if (pair? valy)
+                             ((lambda
+                                (valx valy)
+                                (if (eq? valx '|+∞|)
+                                    (if (null? valy) '|+∞| (fail))
+                                    (fail)))
+                              (car valy)
+                              (cdr valy))
+                             (fail)))
+                       (car vals)
+                       (cdr vals))
+                      (fail)))
+                (lambda
+                  ()
+                  ((lambda
+                     (fail)
+                     (if (pair? vals)
+                         ((lambda
+                            (valx valy)
+                            (if (eq? valx '|-∞|)
+                                (if (pair? valy)
+                                    ((lambda
+                                       (valx valy)
+                                       ((lambda (x) (if (null? valy) x (fail)))
+                                        valx))
+                                     (car valy)
+                                     (cdr valy))
+                                    (fail))
+                                (fail)))
+                          (car vals)
+                          (cdr vals))
+                         (fail)))
+                   (lambda
+                     ()
+                     ((lambda
+                        (fail)
+                        (if (pair? vals)
+                            ((lambda
+                               (valx valy)
+                               ((lambda
+                                  (x)
+                                  (if (pair? valy)
+                                      ((lambda
+                                         (valx valy)
+                                         (if (eq? valx '|-∞|)
+                                             (if (null? valy) x (fail))
+                                             (fail)))
+                                       (car valy)
+                                       (cdr valy))
+                                      (fail)))
+                                valx))
+                             (car vals)
+                             (cdr vals))
+                            (fail)))
+                      (lambda
+                        ()
+                        ((lambda
+                           (fail)
+                           (if (pair? vals)
+                               ((lambda
+                                  (valx valy)
+                                  ((lambda
+                                     (x)
+                                     (if (pair? valy)
+                                         ((lambda
+                                            (valx valy)
+                                            ((lambda
+                                               (y)
+                                               (if (null? valy)
+                                                   (max x y)
+                                                   (fail)))
+                                             valx))
+                                          (car valy)
+                                          (cdr valy))
+                                         (fail)))
+                                   valx))
+                                (car vals)
+                                (cdr vals))
+                               (fail)))
+                         (lambda () (match-failure vals))))))))))))))
+       matcher)
+     args)))
+(define
+  |min'|
+  (lambda
+    args
+    ((letrec
+       ((matcher
+          (lambda
+            (vals)
+            ((lambda
+               (fail)
+               (if (pair? vals)
+                   ((lambda
+                      (valx valy)
+                      (if (eq? valx '|-∞|)
+                          (if (pair? valy)
+                              ((lambda
+                                 (valx valy)
+                                 (if (null? valy) '|-∞| (fail)))
+                               (car valy)
+                               (cdr valy))
+                              (fail))
+                          (fail)))
+                    (car vals)
+                    (cdr vals))
+                   (fail)))
+             (lambda
+               ()
+               ((lambda
+                  (fail)
+                  (if (pair? vals)
+                      ((lambda
+                         (valx valy)
+                         (if (pair? valy)
+                             ((lambda
+                                (valx valy)
+                                (if (eq? valx '|-∞|)
+                                    (if (null? valy) '|-∞| (fail))
+                                    (fail)))
+                              (car valy)
+                              (cdr valy))
+                             (fail)))
+                       (car vals)
+                       (cdr vals))
+                      (fail)))
+                (lambda
+                  ()
+                  ((lambda
+                     (fail)
+                     (if (pair? vals)
+                         ((lambda
+                            (valx valy)
+                            (if (eq? valx '|+∞|)
+                                (if (pair? valy)
+                                    ((lambda
+                                       (valx valy)
+                                       ((lambda (x) (if (null? valy) x (fail)))
+                                        valx))
+                                     (car valy)
+                                     (cdr valy))
+                                    (fail))
+                                (fail)))
+                          (car vals)
+                          (cdr vals))
+                         (fail)))
+                   (lambda
+                     ()
+                     ((lambda
+                        (fail)
+                        (if (pair? vals)
+                            ((lambda
+                               (valx valy)
+                               ((lambda
+                                  (x)
+                                  (if (pair? valy)
+                                      ((lambda
+                                         (valx valy)
+                                         (if (eq? valx '|+∞|)
+                                             (if (null? valy) x (fail))
+                                             (fail)))
+                                       (car valy)
+                                       (cdr valy))
+                                      (fail)))
+                                valx))
+                             (car vals)
+                             (cdr vals))
+                            (fail)))
+                      (lambda
+                        ()
+                        ((lambda
+                           (fail)
+                           (if (pair? vals)
+                               ((lambda
+                                  (valx valy)
+                                  ((lambda
+                                     (x)
+                                     (if (pair? valy)
+                                         ((lambda
+                                            (valx valy)
+                                            ((lambda
+                                               (y)
+                                               (if (null? valy)
+                                                   (min x y)
+                                                   (fail)))
+                                             valx))
+                                          (car valy)
+                                          (cdr valy))
+                                         (fail)))
+                                   valx))
+                                (car vals)
+                                (cdr vals))
+                               (fail)))
+                         (lambda () (match-failure vals))))))))))))))
+       matcher)
+     args)))
+(define
   maxx
   (lambda
     args
@@ -1529,7 +1759,7 @@
                                                  (valx _valy_83)
                                                  (if (null? _valy_83)
                                                      (if (null? valy)
-                                                         (max x1 x2)
+                                                         (|max'| x1 x2)
                                                          (fail))
                                                      (fail)))
                                                (car _valy_77)
@@ -1577,7 +1807,7 @@
                                                  (valx _valy_83)
                                                  (if (null? _valy_83)
                                                      (if (null? valy)
-                                                         (min x1 x2)
+                                                         (|min'| x1 x2)
                                                          (fail))
                                                      (fail)))
                                                (car _valy_77)
@@ -1625,7 +1855,7 @@
                                                  (y1)
                                                  (if (null? _valy_79)
                                                      (if (null? valy)
-                                                         (max y1 y2)
+                                                         (|max'| y1 y2)
                                                          (fail))
                                                      (fail)))
                                                valx))
@@ -1673,7 +1903,7 @@
                                                  (y1)
                                                  (if (null? _valy_79)
                                                      (if (null? valy)
-                                                         (min y1 y2)
+                                                         (|min'| y1 y2)
                                                          (fail))
                                                      (fail)))
                                                valx))
@@ -1753,16 +1983,16 @@
      args)))
 (define
   min-x
-  (lambda (w1009) (fold (flip minx) '+inf.0 w1009)))
+  (lambda (w1009) (fold (flip minx) '|+∞| w1009)))
 (define
   max-x
-  (lambda (w1010) (fold (flip maxx) '-inf.0 w1010)))
+  (lambda (w1010) (fold (flip maxx) '|-∞| w1010)))
 (define
   min-y
-  (lambda (w1011) (fold (flip miny) '+inf.0 w1011)))
+  (lambda (w1011) (fold (flip miny) '|+∞| w1011)))
 (define
   max-y
-  (lambda (w1012) (fold (flip maxy) '-inf.0 w1012)))
+  (lambda (w1012) (fold (flip maxy) '|-∞| w1012)))
 (define
   normalize
   (lambda
@@ -1850,22 +2080,22 @@
   min-xs
   (lambda
     (ts)
-    (reduce min '+inf.0 (map (compose min-x cdr) ts))))
+    (reduce min '|+∞| (map (compose min-x cdr) ts))))
 (define
   max-xs
   (lambda
     (ts)
-    (reduce max '-inf.0 (map (compose max-x cdr) ts))))
+    (reduce max '|-∞| (map (compose max-x cdr) ts))))
 (define
   min-ys
   (lambda
     (ts)
-    (reduce min '+inf.0 (map (compose min-y cdr) ts))))
+    (reduce min '|+∞| (map (compose min-y cdr) ts))))
 (define
   max-ys
   (lambda
     (ts)
-    (reduce max '-inf.0 (map (compose max-y cdr) ts))))
+    (reduce max '|-∞| (map (compose max-y cdr) ts))))
 (define
   normalizes
   (lambda
@@ -3538,8 +3768,34 @@
                                                                                                                                                                 _x_120)))
                                                                                                                                                            (if (= y1
                                                                                                                                                                   y2)
-                                                                                                                                                               (list (cons :UC
-                                                                                                                                                                           t))
+                                                                                                                                                               (call-with-values
+                                                                                                                                                                 (lambda
+                                                                                                                                                                   ()
+                                                                                                                                                                   (split #t
+                                                                                                                                                                          p1
+                                                                                                                                                                          p3
+                                                                                                                                                                          p2))
+                                                                                                                                                                 (lambda
+                                                                                                                                                                   (x _x_120)
+                                                                                                                                                                   ((lambda
+                                                                                                                                                                      (x y)
+                                                                                                                                                                      (append
+                                                                                                                                                                        (decompose
+                                                                                                                                                                          (sort trisort
+                                                                                                                                                                                (list p1
+                                                                                                                                                                                      (_list_33
+                                                                                                                                                                                        x
+                                                                                                                                                                                        y)
+                                                                                                                                                                                      p3)))
+                                                                                                                                                                        (decompose
+                                                                                                                                                                          (sort trisort
+                                                                                                                                                                                (list (_list_33
+                                                                                                                                                                                        x
+                                                                                                                                                                                        y)
+                                                                                                                                                                                      p3
+                                                                                                                                                                                      p2)))))
+                                                                                                                                                                    x
+                                                                                                                                                                    _x_120)))
                                                                                                                                                                (if (if (= y2
                                                                                                                                                                           y3)
                                                                                                                                                                        (= x1
@@ -3622,8 +3878,34 @@
                                                                                                                                                                                     _x_120)))
                                                                                                                                                                                (if (= y2
                                                                                                                                                                                       y3)
-                                                                                                                                                                                   (list (cons :DC
-                                                                                                                                                                                               t))
+                                                                                                                                                                                   (call-with-values
+                                                                                                                                                                                     (lambda
+                                                                                                                                                                                       ()
+                                                                                                                                                                                       (split #t
+                                                                                                                                                                                              p2
+                                                                                                                                                                                              p1
+                                                                                                                                                                                              p3))
+                                                                                                                                                                                     (lambda
+                                                                                                                                                                                       (x _x_120)
+                                                                                                                                                                                       ((lambda
+                                                                                                                                                                                          (x y)
+                                                                                                                                                                                          (append
+                                                                                                                                                                                            (decompose
+                                                                                                                                                                                              (sort trisort
+                                                                                                                                                                                                    (list p1
+                                                                                                                                                                                                          p2
+                                                                                                                                                                                                          (_list_33
+                                                                                                                                                                                                            x
+                                                                                                                                                                                                            y))))
+                                                                                                                                                                                            (decompose
+                                                                                                                                                                                              (sort trisort
+                                                                                                                                                                                                    (list p1
+                                                                                                                                                                                                          (_list_33
+                                                                                                                                                                                                            x
+                                                                                                                                                                                                            y)
+                                                                                                                                                                                                          p3)))))
+                                                                                                                                                                                        x
+                                                                                                                                                                                        _x_120)))
                                                                                                                                                                                    (if (if (= x1
                                                                                                                                                                                               x3)
                                                                                                                                                                                            (if (>= x2

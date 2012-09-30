@@ -53,23 +53,35 @@
 			        (,(+ x3 dx) ,(+ y3 dy))]
 			  ))
 
-(def maxx (fn x2 (x1 _) => (max x1 x2)))
-(def minx (fn x2 (x1 _) => (min x1 x2)))
-(def maxy (fn y2 (_ y1) => (max y1 y2)))
-(def miny (fn y2 (_ y1) => (min y1 y2)))
+; hop doesn't know +inf.0 and -inf.0
+(def-syntax +inf0 '+∞)
+(def-syntax -inf0 '-∞)
+
+(def max' (fn '+∞ _ -> +∞
+	   || _ '+∞ -> +∞
+	   || '-∞ x => x
+	   || x '-∞ => x
+	   || x y => (max x y)))
+
+(def min' (fn '-∞ _ -> -∞
+	   || _ '-∞ -> -∞
+	   || '+∞ x => x
+	   || x '+∞ => x
+	   || x y => (min x y)))
+
+(def maxx (fn x2 (x1 _) => (max' x1 x2)))
+(def minx (fn x2 (x1 _) => (min' x1 x2)))
+(def maxy (fn y2 (_ y1) => (max' y1 y2)))
+(def miny (fn y2 (_ y1) => (min' y1 y2)))
 
 (def flip (fn. f x y => (f y x)))
 
-; hop doesn't know +inf.0 and -inf.0
-(def-syntax +inf0 '+inf.0)
-(def-syntax -inf0 '-inf.0)
-
+; srfi1's fold-left is flipped
 (def min-x [fold (flip minx) +inf0 <>])
 (def max-x [fold (flip maxx) -inf0 <>])
 (def min-y [fold (flip miny) +inf0 <>])
 (def max-y [fold (flip maxy) -inf0 <>])
 
-; srfi1's fold-left is flipped
 (def normalize (fn t =>
   (let ([mx (min-x t)]
 	[my (min-y t)]
@@ -210,7 +222,7 @@
 
 ; sort on y-coordinate, and then on x-coordinate
 (def trisort (fun (_ y1) (_ [_ < y1]) => #true
-               || (x1 y1) ([_ > x1] [_ = y1]) => #true))
+              || (x1 y1) ([_ > x1] [_ = y1]) => #true))
 
 ; always split from the p2
 (def split (fn vert ((x1 y1) as p1) ((x2 y2) as p2) ((x3 y3) as p3) =>
@@ -248,13 +260,13 @@
 		(decompose (sort trisort (list p1 p2 `(,x ,y))))
 		(decompose (sort trisort (list p1 `(,x ,y) p3))))
 	     ))
-	 ((= y1 y2) (list (cons UC: t))) ; UC
-	 #|((= y1 y2)
+	 ;((= y1 y2) (list (cons UC: t))) ; UC
+	 ((= y1 y2)
  	  (let-values ([(x y) (split #true p1 p3 p2)])
 	     (append ;'BOT
 		(decompose (sort trisort (list p1 `(,x ,y) p3)))
 		(decompose (sort trisort (list `(,x ,y) p3 p2))))
-	     ))|#
+	     ))
 	 ; bot
 	 ((and (= y2 y3) [= x1 x2]) (list (cons DL: t))) ; DL
 	 ((and (= y2 y3) [= x1 x3]) (list (cons DR: t))) ; DR
@@ -270,13 +282,13 @@
 		(decompose (sort trisort (list p1 `(,x ,y) p2)))
 		(decompose (sort trisort (list `(,x ,y) p2 p3))))
 	     ))
-	 ((= y2 y3) (list (cons DC: t))) ; DC we are done
-	 #|((= y2 y3) 
+	 ;((= y2 y3) (list (cons DC: t))) ; DC we are done
+	 ((= y2 y3) 
  	  (let-values ([(x y) (split #true p2 p1 p3)])
 	     (append ;'BOT
 		(decompose (sort trisort (list p1 p2 `(,x ,y))))
 		(decompose (sort trisort (list p1 `(,x ,y) p3))))
-	     ))|#
+	     ))
 	 ([and (= x1 x3) (>= x2 x1) (< y2 y1) (< y3 y2)] (list (cons LC: t)))     ; LC
 	 ([and (= x1 x3) (<= x2 x1) (< y2 y1) (< y3 y2)] (list (cons RC: t)))     ; RC
 	 (else (let-values ([(x y) (apply split #false t)])
